@@ -1,0 +1,12 @@
+[package]
+name = "star-map"
+version = "0.1.0"
+edition = "2024"
+
+[package.metadata.rust-analyzer] 
+rustc_private=true
+
+[dependencies]
+chrono = "0.4.40"
+reqwest = { version = "0.12.14", features = ["blocking", "json"] }
+serde_json = { version = "1.0.140", features = ["std"] }
