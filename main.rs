@@ -1,80 +1,17 @@
 use reqwest::blocking::Client;
 use std::error::Error;
 use serde_json;
-use std::fs;
-use std::f64::consts::PI;
+use iced::{Element, Length, Alignment};
+use iced::widget::{button, column, row, text, text_input};
+use iced;
+use num_traits::abs;
 
+mod calculations;
+pub use crate::calculations::calculate;
 
-fn main() {
-    let latitude = 47.359;
-    let longitude = 121.986;
-    let altitude = 26.7;
-    let azimuth = 46.0;
-    
-    let year = 2020;
-    let month = 10;
-    let day = 26;
-    let hour = 3;
-    let minute = 43;
-    let second = 30;
-
-    let (ra, dec) = horizon_to_equatorial(
-        latitude, longitude, altitude, azimuth, year, month, day, hour, minute, second,
-    );
-
-    let star = get_star(ra, dec).unwrap();
-
-    println!("\nRA: {}\nDEC: {}\n\n{}", ra, dec, serde_json::to_string_pretty(&star).unwrap());
-}
-
-fn get_star(ra: f64, dec: f64) -> Result<serde_json::Value, Box<dyn Error>>
-{
-    let client = Client::new();
-    let simbad_url = "http://simbad.u-strasbg.fr/simbad/sim-tap/sync";
-    
-    let query = format!(r#"
-    SELECT TOP 1
-        b.main_id AS star_id, 
-        b.ra, 
-        b.dec, 
-        b.pmra, 
-        b.pmdec, 
-        b.plx_value AS parallax, 
-        f.flux AS visual_magnitude, 
-        b.sp_type AS spectral_type
-    FROM 
-        basic AS b
-    JOIN 
-        flux AS f ON b.oid = f.oidref
-    WHERE 
-        f.filter = 'V'
-        AND f.flux <= 6.5
-        AND CONTAINS(POINT('ICRS', b.ra, b.dec), CIRCLE('ICRS', {}, {}, 1.5)) = 1
-    ORDER BY 
-        visual_magnitude ASC
-        "#, ra, dec);
-
-    let params = [
-        ("request", "doQuery"),
-        ("lang", "ADQL"),
-        ("format", "json"),
-        ("query", &query),
-    ];
-
-    let response = client.post(simbad_url).form(&params).send()?;
-
-    fs::write("./src/output.json", response.text()?)
-        .expect("Unable to write to file");
-    let file = fs::File::open("./src/output.json")
-        .expect("File could not be opened");
-    let json: serde_json::Value = serde_json::from_reader(file)
-        .expect("File could not be read");
-
-    Ok(json["data"].clone())
-
-}
-
-fn horizon_to_equatorial(
+// Iced Variables
+#[derive(Default)]
+struct State{
     latitude: f64,
     longitude: f64,
     altitude: f64,
@@ -85,73 +22,277 @@ fn horizon_to_equatorial(
     hour: i32,
     minute: i32,
     second: i32,
-) -> (f64, f64) {
-    let lat_rad = deg_to_rad(latitude);
-    let alt_rad = deg_to_rad(altitude);
-    let az_rad = deg_to_rad(azimuth);
+    location: String,
+    utc_offset: i32,
+    brightest_star: [String; 8],
+    closest_star: [String; 8],
+}
 
-    // Compute Julian Day and GMST
-    let jd = julian_day(year, month, day, hour, minute, second);
-    let gmst_deg = gmst(jd);
+// Iced functions
+#[derive(Debug, Clone)]
+pub enum Message {
+    LocationChanged(String),
+    AltitudeChanged(String),
+    AzimuthChanged(String),
+    YearChanged(String),
+    MonthChanged(String),
+    DayChanged(String),
+    HourChanged(String),
+    MinuteChanged(String),
+    SecondChanged(String),
+    FetchStar
+}
 
-    // Compute Local Sidereal Time (LST)
-    let lst_deg = (gmst_deg + longitude / 15.0).rem_euclid(360.0);
-    let lst_rad = deg_to_rad(lst_deg);
+impl State {
+    // Display updater
+    fn update(&mut self, message: Message) -> () {
+        match message {
+            Message::LocationChanged(location) => {
+                self.location = location;
+            }
+            Message::AltitudeChanged(altitude) => {
+                if altitude != "" {
+                    self.altitude = altitude.parse::<f64>().unwrap();
+                }
+            }
+            Message::AzimuthChanged(azimuth) => {
+                if azimuth != "" {
+                    self.azimuth = azimuth.parse::<f64>().unwrap();
+                }
+            }
+            Message::YearChanged(year) => {
+                if year != ""{
+                    self.year = year.parse::<i32>().unwrap();
+                }
+            }
+            Message::MonthChanged(month) => {
+                if month != "" {
+                    self.month = month.parse::<i32>().unwrap();
+                }
+            }
+            Message::DayChanged(day) => {
+                if day != "" {
+                    self.day = day.parse::<i32>().unwrap();
+                }
+            }
+            Message::HourChanged(hour) => {
+                if hour != "" {
+                    self.hour = hour.parse::<i32>().unwrap();
+                }
+            }
+            Message::MinuteChanged(minute) => {
+                if minute != "" {
+                    self.minute = minute.parse::<i32>().unwrap();
+                }
+            }
+            Message::SecondChanged(second) => {
+                if second != "" {
+                    self.second = second.parse::<i32>().unwrap();
+                }
+            }
+    
+            Message::FetchStar => {
+                let mut epoch: i64 = -1;
+                let mut ra = 0.0;
+                let mut dec = 0.0;
 
-    // Calculate declination (Dec)
-    let sin_dec = alt_rad.sin() * lat_rad.sin() + alt_rad.cos() * lat_rad.cos() * az_rad.cos();
-    let dec_rad = sin_dec.asin();
+                match calculate::get_epoch(self.utc_offset, self.year, self.month, self.day, self.hour, self.minute, self.second) {
+                    Ok(_epoch) => epoch = _epoch,
+                    Err(_) => println!("Error getting epoch")
+                }
+                match calculate::get_location_data(&self.location, epoch) 
+                {
+                    Ok((lat, long, offset)) => {
+                        self.latitude = lat;
+                        self.longitude = abs(long);
+                        self.utc_offset = offset;
+                    }
+                    Err(_) => {println!("Error getting location data")}
+                }
 
-    // Compute Right Ascension (RA) from LST and Hour Angle (H)
-    let mut h_rad = lst_rad - dec_rad;  // Use adjusted equation
-    if h_rad < 0.0 {
-        h_rad += 2.0 * PI;
+                match calculate::horizon_to_equatorial(
+                self.latitude, self.longitude, self.altitude, self.azimuth, self.year, self.month, self.day, self.hour, self.minute, self.second, self.utc_offset) {
+                    Ok((_ra, _dec)) => {
+                        ra = _ra;
+                        dec = _dec;
+                    }
+                    Err(_) => {println!("Error converting to equatorial")}
+                }
+
+
+                match get_star(ra, dec) {
+                    Ok((_brightest_star, _closest_star)) => {
+                        let mut i = 0;
+                        while i < 8 {
+                            self.brightest_star[i] = _brightest_star[i].clone();
+                            self.closest_star[i] = _closest_star[i].clone();
+                            i+=1;
+                        }
+                    }
+                    Err(_) => println!("Error getting star")
+                }
+            }
+        }
     }
 
-    // Convert RA and Dec from radians to degrees
-    let ra_deg = rad_to_deg(h_rad).rem_euclid(360.0);
-    let dec_deg = rad_to_deg(dec_rad);
+    // Display view
+    fn view(&self) -> Element<Message> {
+        let column_fields = column!
+        [
+            text("Nearest zip code, city name at observation spot").size(14),
+            text_input("", &self.location)
+                .on_input(Message::LocationChanged),
+            text("Type altitude of star (not height of location)").size(14),
+            text_input("", &self.altitude.to_string())
+                .on_input(Message::AltitudeChanged),
+            text("Type azimuth of star").size(14),
+            text_input("", &self.azimuth.to_string())
+                .on_input(Message::AzimuthChanged),
+            text("Type year at observation").size(14),
+            text_input("", &self.year.to_string())
+                .on_input(Message::YearChanged),
+            text("Type month at observation").size(14),
+            text_input("", &self.month.to_string())
+                .on_input(Message::MonthChanged),
+            text("Type day of observation").size(14),
+            text_input("", &self.day.to_string())
+                .on_input(Message::DayChanged),
+            text("Type hour of observation in 24 hour format").size(14),
+            text_input("", &self.hour.to_string())
+                .on_input(Message::HourChanged),
+            text("Use local time, utc offset is applied automatically").size(12),
+            text("Type minute of observation").size(14),
+            text_input("", &self.minute.to_string())
+                .on_input(Message::MinuteChanged),
+            text("Type second of observation").size(14),
+            text_input("", &self.second.to_string())
+                .on_input(Message::SecondChanged),
+            text("If unsure, type 30").size(12),
+            button("Enter").on_press(Message::FetchStar),
+        ].spacing(5).padding(5).width(Length::FillPortion(1));
 
-    (ra_deg, dec_deg)
+        let column_data = column! 
+        [
+            text("Brightest star in 3 degree radius around point").size(25),
+            text(format!("Name: {}\nDistance from entered point in degrees: {:.3}\nStar Magnitude (Brightness): {}\nRight Ascension: {:.6}\nDeclination: {:.6}\nDistance from earth: {:.6} lightyears\nStar type: {}\n",
+                    &self.brightest_star[2], &self.brightest_star[1], &self.brightest_star[0], 
+                    &self.brightest_star[3], &self.brightest_star[4], 
+                    match &self.brightest_star[5].parse::<f64>() {
+                        Ok(value) => ((1000.0 / value)*3.262).to_string(),
+                        Err(_) => "N/A".to_string()
+                    }, 
+                    &self.brightest_star[6])).size(16),
+            text("\n\nClosest star to selected point").size(25),
+            text(format!("Name: {}\nDistance from entered point in degrees: {:.3}\nStar Magnitude (Brightness): {}\nRight Ascension: {:.6}\nDeclination: {:.6}\nDistance from earth: {:.6} lightyears\nStar type: {}\n",
+                    &self.closest_star[2], &self.closest_star[1], &self.closest_star[0], 
+                    &self.closest_star[3], &self.closest_star[4], 
+                    match &self.closest_star[5].parse::<f64>() {
+                        Ok(value) => ((1000.0 / value)*3.262).to_string(),
+                        Err(_) => "N/A".to_string()
+                    }, 
+                    &self.closest_star[6])).size(16),
+            text("\n\nNotes: \n- Program may take a couple seconds to load the data.\n- A magnitude of 6 is near the limit of what you could see with your naked eye.
+                \n- The first letter of the star type corresponds to its color.\n  * For example, O would be a blue star, M would be a red star.
+                \n  * From blue to red, the order is: O, B, A, F, G, K, M.\n  * This order also corresponds to its surface tempature, from hottest (O) to coldest (M).\n  * Our own sun is a G type star.").size(12)
+        ].spacing(5).padding(5).width(Length::FillPortion(2));
+
+        row![column_fields, column_data]
+        .padding(10)
+        .spacing(20)
+        .align_y(Alignment::Start)
+        .into()
+
+    }
 }
 
-fn deg_to_rad(deg: f64) -> f64 {
-    deg * PI / 180.0
+fn main() {
+    iced::run("Star finder - Aidan Vastbinder", State::update, State::view)
+    .expect("Failed to start application")
 }
 
-fn rad_to_deg(rad: f64) -> f64 {
-    rad * 180.0 / PI
+fn get_star(ra: f64, dec: f64) -> Result<([String; 8], [String; 8]), Box<dyn Error>>
+{
+    let client = Client::new();
+    let simbad_url = "http://simbad.u-strasbg.fr/simbad/sim-tap/sync";
+    let mut search_area = 0.0;
+    let mut brightest = (7.0, 0.0, "".to_string());
+    let mut closest = (0.0, 5.0, "".to_string());
+
+    while search_area <= 3.0
+    {
+        let query = format!(r#"
+        SELECT TOP 1
+            b.main_id AS star_id, 
+            b.ra, 
+            b.dec, 
+            b.plx_value,
+            b.sp_type,
+            f.flux AS visual_magnitude
+        FROM 
+            basic AS b
+        JOIN 
+            flux AS f ON b.oid = f.oidref
+        WHERE 
+            f.filter = 'V'
+            AND f.flux <= 7
+            AND CONTAINS(POINT('ICRS', b.ra, b.dec), CIRCLE('ICRS', {}, {}, {})) = 1
+        ORDER BY 
+            visual_magnitude ASC
+            "#, ra, dec, search_area);
+
+        let params = [
+            ("request", "doQuery"),
+            ("lang", "ADQL"),
+            ("format", "json"),
+            ("query", &query),
+        ];
+
+        let response = client.post(simbad_url).form(&params).send()?;
+
+        let json: serde_json::Value = response.json()?;
+
+            if let Some(rows) = json["data"].as_array() {
+                if let Some(first_row) = rows.first() {
+                    if let Some(magnitude) = first_row.get(5).and_then(serde_json::Value::as_f64) {
+                        if magnitude < brightest.0 {
+                            brightest = (magnitude, search_area, json["data"].to_string());
+                        }
+
+                        if search_area < closest.1 {
+                            closest = (magnitude, search_area, json["data"].to_string())
+                        }
+                    }
+                }
+            }
+        search_area += 0.1;
+    }
+
+    let mut brightest_data = ["".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string()];
+    let mut closest_data = ["".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string()];
+
+    brightest_data[0] = brightest.0.to_string();
+    brightest_data[1] = brightest.1.to_string();
+    closest_data[0] = closest.0.to_string();
+    closest_data[1] = closest.1.to_string();
+
+    let bright_data: Vec<&str> = brightest.2.split(',').collect();
+    let close_data: Vec<&str> = closest.2.split(',').collect();
+
+    let mut i = 0;
+    while i < 5 {
+        brightest_data[i+2] = bright_data[i].to_string();
+        closest_data[i+2] = close_data[i].to_string();
+        i+=1;
+    }
+
+    brightest_data[2] = brightest_data[2][2..].to_string();
+    closest_data[2] = closest_data[2][2..].to_string();
+
+    println!("{:?}\n{:?}", brightest_data, closest_data);
+
+    Ok((brightest_data, closest_data))
 }
 
-/// Compute Julian Day (JD) given a date and time in UTC.
-fn julian_day(year: i32, month: i32, day: i32, hour: i32, minute: i32, second: i32) -> f64 {
-    let y = if month <= 2 { year - 1 } else { year };
-    let m = if month <= 2 { month + 12 } else { month };
 
-    let a = (y as f64 / 100.0).floor();
-    let b = 2.0 - a + (a / 4.0).floor();
 
-    let day_fraction = (hour as f64 + minute as f64 / 60.0 + second as f64 / 3600.0) / 24.0;
 
-    let jd = (365.25 * (y as f64 + 4716.0)).floor()
-        + (30.6001 * ((m + 1) as f64)).floor()
-        + day as f64
-        + b
-        - 1524.5
-        + day_fraction;
-
-    jd
-}
-
-/// Compute Greenwich Mean Sidereal Time (GMST) in degrees.
-fn gmst(jd: f64) -> f64 {
-    let d = jd - 2451545.0; // Days since J2000.0
-    let t = d / 36525.0; // Julian centuries since J2000.0
-
-    let gmst_deg = 280.46061837
-        + 360.98564736629 * d
-        + 0.000387933 * t.powi(2)
-        - (t.powi(3) / 38710000.0);
-
-    gmst_deg.rem_euclid(360.0) // Normalize to [0, 360)
-}
