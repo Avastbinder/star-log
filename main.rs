@@ -182,7 +182,7 @@ impl State {
                         Err(_) => "N/A".to_string()
                     }, 
                     &self.brightest_star[6])).size(16),
-            text("\n\nClosest star to selected point").size(25),
+            text("\nClosest star to selected point").size(25),
             text(format!("Name: {}\nDistance from entered point in degrees: {:.3}\nStar Magnitude (Brightness): {}\nRight Ascension: {:.6}\nDeclination: {:.6}\nDistance from earth: {:.6} lightyears\nStar type: {}\n",
                     &self.closest_star[2], &self.closest_star[1], &self.closest_star[0], 
                     &self.closest_star[3], &self.closest_star[4], 
@@ -191,9 +191,9 @@ impl State {
                         Err(_) => "N/A".to_string()
                     }, 
                     &self.closest_star[6])).size(16),
-            text("\n\nNotes: \n- Program may take a couple seconds to load the data.\n- A magnitude of 6 is near the limit of what you could see with your naked eye.
-                \n- The first letter of the star type corresponds to its color.\n  * For example, O would be a blue star, M would be a red star.
-                \n  * From blue to red, the order is: O, B, A, F, G, K, M.\n  * This order also corresponds to its surface tempature, from hottest (O) to coldest (M).\n  * Our own sun is a G type star.").size(12)
+            text("\n\nNotes: \n- Requires internet connection\n- Program may take a couple seconds to load the data.\n- A magnitude of 6 is near the limit of what you could see with your naked eye.
+- The first letter of the star type corresponds to its color.\n   * For example, O would be a blue star, M would be a red star.
+   * From blue to red, the order is: O, B, A, F, G, K, M.\n   * This order also corresponds to its surface tempature, from hottest (O) to coldest (M).\n   * Our own sun is a G type star.").size(12)
         ].spacing(5).padding(5).width(Length::FillPortion(2));
 
         row![column_fields, column_data]
