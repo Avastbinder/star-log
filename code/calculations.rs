@@ -5,7 +5,8 @@ pub mod calculate {
     use num_traits::ToPrimitive;
     use std::f64::consts::PI;
     use chrono::{NaiveDateTime, TimeZone, Utc};
-
+    
+    // Get the number of seconds since 1970, generally considered as the "epoch" used in calculations
     pub fn get_epoch(utc_offset: i32, mut year: i32, mut month: i32, mut day: i32, mut hour: i32, mut minute: i32, mut second: i32) -> Result<i64, Box<dyn std::error::Error>> {
         match utc_offset_accountance(utc_offset, year, month, day, hour, minute, second)
         {
@@ -33,6 +34,7 @@ pub mod calculate {
         Ok(epoch)
     }
 
+    // Get the longitude and latitude based on entered zip code or city name
     pub fn get_location_data(location: &str, epoch: i64) -> Result<(f64, f64, i32), Box<dyn std::error::Error>> {
         let key = ""; // key deleted for privacy concerns. Run from the .exe
         let url = format!("http://api.weatherapi.com/v1/current.json?key={}&q={}", key, location);
@@ -59,12 +61,12 @@ pub mod calculate {
         let timezone_offset = json["rawOffset"].as_f64().unwrap();
         let dst_offset = json["dstOffset"].as_f64().unwrap();
 
-        let tz_offset = ((timezone_offset + dst_offset) / 3600.0).round().to_i32().unwrap();
+        let tz_offset = ((timezone_offset + dst_offset) / 3600.0).round().to_i32().unwrap(); // Account for daylight savings time in timezone offset
         
         Ok((lat, lon, tz_offset))
     }
 
-
+    // Converts entered horizontal coordinates to equatorial
     pub fn horizon_to_equatorial(
         latitude: f64,
         longitude: f64,
@@ -79,6 +81,7 @@ pub mod calculate {
         utc_offset: i32
     ) -> Result<(f64, f64), Box<dyn std::error::Error>> {
         
+        // Account for the timezone offset to UTC
         match utc_offset_accountance(utc_offset, year, month, day, hour, minute, second) {
             Ok((y, m, d, h, min, s)) => {
                 year = y;
@@ -111,27 +114,31 @@ pub mod calculate {
         
         // Compute Hour Angle (H)
         let dec_deg = dec_rad.to_degrees();
-        
+
+        // Calculate declination
         let sin_dec = altitude.to_radians().sin() * latitude.to_radians().sin() 
             + altitude.to_radians().cos() * latitude.to_radians().cos() * azimuth.to_radians().cos();
         let dec = sin_dec.asin().to_degrees();
-        
+
+        // Calculate local sidereal time
         let sin_lha = (-azimuth.to_radians().sin() * altitude.to_radians().cos()) / dec.to_radians().cos();
         let cos_lha = (altitude.to_radians().sin() - (latitude.to_radians().sin() * dec.to_radians().sin()))
             / (dec.to_radians().cos() * latitude.to_radians().cos());
         let lha = sin_lha.atan2(cos_lha).to_degrees().rem_euclid(360.0);
     
         println!("LHA: {}", lha);
-        
+
+        // Calculate right ascension
         let ra_deg = (lst_deg - lha).rem_euclid(360.0);
     
-        let (ra, dec) = jnow_to_j2000(ra_deg, dec_deg, year.to_f64().unwrap());
+        let (ra, dec) = jnow_to_j2000(ra_deg, dec_deg, year.to_f64().unwrap()); // SIMBAD's TAP Query uses the j2000 coordinates. Convert the coordinates we calculated to j2000.
         
         println!("RA: {}\nDEC: {}", ra.rem_euclid(360.0), dec.rem_euclid(360.0));
 
         Ok((ra.rem_euclid(360.0), dec.rem_euclid(360.0)))
     }
 
+    // Correct the data types
     pub fn to_correct(    
     altitude: &String,
     azimuth: &String,
@@ -224,9 +231,9 @@ pub mod calculate {
         gmst.rem_euclid(360.0)
     }
 
+    // Account for the timezone offset, we use UTC time in our calculations
     fn utc_offset_accountance(utc_offset: i32, mut year: i32, mut month: i32, mut day: i32, mut hour: i32, mut minute: i32, mut second: i32) -> Result<(i32, i32, i32, i32, i32, i32), Box<dyn std::error::Error>> {
         // Add the utc offset to the hour variable, account for a negative or positive offset
-        
         hour -= utc_offset;
         println!("utc time: {}", hour);
 
