@@ -1,41 +1,37 @@
 # Overview
 
-
-{Provide a description of the software that you wrote and how it integrates with a Cloud Database. Describe how to use your program.}
-
 A star finder program, written in Rust. 
 
 Enter in location, date, time, and horizontal coordinates of an observed star, and enter it into this program to find information about that star.
 
-
-
-{Provide a link to your YouTube demonstration. It should be a 4-5 minute demo of the software running, a walkthrough of the code, and a view of the cloud database.}
-
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/IfQDAYKjHxA)
 
 # Cloud Database
 
-{Describe the cloud database you are using.}
+Uses [WeatherAPI](https://www.weatherapi.com/), Googles timezone API to assist the user in inputting data, such as automatically converting to UTC, and getting location coordinates based on a zip code or city name.
 
-{Describe the structure of the database that you created.}
+Uses [SIMBAD's TAP Query](https://simbad.cds.unistra.fr/simbad/), which is used to locate the star and give information on the star like distance, brightness, star type.
 
 # Development Environment
 
-{Describe the tools that you used to develop the software}
+Used Visual Studio Code, and a very useful tool in the making of this application was [Stellarium](https://stellarium.org/), which allowed me to test the program, and also how accurate it is.
 
-{Describe the programming language that you used and any libraries.}
+Built in Rust, and the libraries used in this project are;
+
+- Iced, for the GUI
+- Reqwests, to interface with the various API's used
+- Serde_json, to manipulate the data from the API's
+- Chrono, to make parsing date and time easier
 
 # Useful Websites
 
-{Make a list of websites that you found helpful in this project}
-
-- [Web Site Name](http://url.link.goes.here)
-- [Web Site Name](http://url.link.goes.here)
+- [Positional Astronomy: Conversion between horizontal and equatorial systems](https://sceweb.sce.uhcl.edu/helm/WEB-Positional%20Astronomy/Tutorial/Conversion/Conversion.html)
+- [SIMBAD TAP Cheat sheet](https://simbad.cds.unistra.fr/simbad/tap/help/adqlHelp.html)
 
 # Future Work
 
 {Make a list of things that you need to fix, improve, and add in the future.}
 
-- Item 1
-- Item 2
-- Item 3
+- Make more accurate (sometimes struggles with stars that are on cardinal directions)
+- Save the previous searches into a file
+- Return an image of the star
