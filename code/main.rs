@@ -79,6 +79,7 @@ impl State {
                 let mut ra = 0.0;
                 let mut dec = 0.0;
 
+                // Strings are easier for user input. Convert to proper variable types.
                 let (altitude, azimuth, year, month, day, hour, minute, second) = 
                 calculate::to_correct(&self.altitude, &self.azimuth, &self.year, &self.month, &self.day, &self.hour, &self.minute, &self.second);
 
@@ -87,6 +88,7 @@ impl State {
                     Err(_) => println!("Error getting epoch")
                 }
 
+                // Get earth coordinates based on zip code or city name
                 match calculate::get_location_data(&self.location, epoch) 
                 {
                     Ok((lat, long, offset)) => {
@@ -97,6 +99,7 @@ impl State {
                     Err(_) => {println!("Error getting location data")}
                 }
 
+                // Convert given values into equatorial coordinates for the SIMBAD TAP Query
                 match calculate::horizon_to_equatorial(
                 self.latitude, self.longitude, altitude, azimuth, year, month, day, hour, minute, second, self.utc_offset) {
                     Ok((_ra, _dec)) => {
@@ -106,6 +109,7 @@ impl State {
                     Err(_) => {println!("Error converting to equatorial")}
                 }
 
+                // Use SIMBAD TAP Query with returned equatorial coordinates
                 match get_star(ra, dec) {
                     Ok((_brightest_star, _closest_star)) => {
                         let mut i = 0;
@@ -123,6 +127,7 @@ impl State {
 
     // Display view
     fn view(&self) -> Element<Message> {
+        // Input side of GUI
         let column_fields = column!
         [
             text("Nearest zip code, city name at observation spot").size(14),
@@ -157,6 +162,7 @@ impl State {
             button("Enter").on_press(Message::FetchStar),
         ].spacing(5).padding(5).width(Length::FillPortion(1));
 
+        // Output side of GUI
         let column_data = column! 
         [
             text("Brightest star in 3 degree radius around point").size(25),
@@ -204,7 +210,7 @@ fn get_star(ra: f64, dec: f64) -> Result<([String; 8], [String; 8]), Box<dyn Err
     let mut brightest = (7.0, 0.0, "".to_string());
     let mut closest = (0.0, 5.0, "".to_string());
 
-    while search_area <= 3.0
+    while search_area <= 3.0 // Query with a 3 degree radius
     {
         let query = format!(r#"
         SELECT TOP 1
@@ -237,25 +243,26 @@ fn get_star(ra: f64, dec: f64) -> Result<([String; 8], [String; 8]), Box<dyn Err
 
         let json: serde_json::Value = response.json()?;
 
-            if let Some(rows) = json["data"].as_array() {
-                if let Some(first_row) = rows.first() {
-                    if let Some(magnitude) = first_row.get(5).and_then(serde_json::Value::as_f64) {
-                        if magnitude < brightest.0 {
-                            brightest = (magnitude, search_area, json["data"].to_string());
-                        }
-
-                        if search_area < closest.1 {
-                            closest = (magnitude, search_area, json["data"].to_string())
-                        }
+        // Check the star magnitude, compare to previous highest value, replace if higher.
+        if let Some(rows) = json["data"].as_array() {
+            if let Some(first_row) = rows.first() {
+                if let Some(magnitude) = first_row.get(5).and_then(serde_json::Value::as_f64) {
+                    if magnitude < brightest.0 {
+                        brightest = (magnitude, search_area, json["data"].to_string());
+                    }
+                    if search_area < closest.1 {
+                        closest = (magnitude, search_area, json["data"].to_string())
                     }
                 }
             }
+        }
         search_area += 0.1;
     }
 
     let mut brightest_data = ["".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string()];
     let mut closest_data = ["".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string()];
 
+    // Assign the brightest and closest stars magnitude and distance from the entered point into the array
     brightest_data[0] = brightest.0.to_string();
     brightest_data[1] = brightest.1.to_string();
     closest_data[0] = closest.0.to_string();
@@ -264,6 +271,7 @@ fn get_star(ra: f64, dec: f64) -> Result<([String; 8], [String; 8]), Box<dyn Err
     let bright_data: Vec<&str> = brightest.2.split(',').collect();
     let close_data: Vec<&str> = closest.2.split(',').collect();
 
+    // Assemble an array of the star data
     let mut i = 0;
     while i < 5 {
         brightest_data[i+2] = bright_data[i].to_string();
@@ -271,6 +279,7 @@ fn get_star(ra: f64, dec: f64) -> Result<([String; 8], [String; 8]), Box<dyn Err
         i+=1;
     }
 
+    // Make name of star prettier
     brightest_data[2] = brightest_data[2][2..].to_string();
     closest_data[2] = closest_data[2][2..].to_string();
 
