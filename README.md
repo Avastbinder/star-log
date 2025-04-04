@@ -2,6 +2,9 @@
 
 A star finder program, written in Rust. 
 
+![image](https://github.com/user-attachments/assets/6491eef1-9d10-4be5-a86f-c57372ed993d)
+
+
 Enter in location, date, time, and horizontal coordinates of an observed star, and enter it into this program to find information about that star.
 
 [Software Demo Video](https://youtu.be/IfQDAYKjHxA)
