@@ -33,8 +33,6 @@ Built in Rust, and the libraries used in this project are;
 
 # Future Work
 
-{Make a list of things that you need to fix, improve, and add in the future.}
-
 - Make more accurate (sometimes struggles with stars that are on cardinal directions)
 - Save the previous searches into a file
 - Return an image of the star
