@@ -11,6 +11,8 @@ For linux, run /target/release/star-map
 
 For Windows, run /target/x86_64-pc-windows-gnu/release/star-map.exe
 
+If you edit the code and build, you must add your own API key for [https://www.weatherapi.com/my/](WeatherAPI) and [https://developers.google.com/maps/documentation/timezone/overview](Google's Timezzone API).
+
 [Software Demo Video](https://youtu.be/IfQDAYKjHxA)
 
 # Cloud Database
