@@ -8,6 +8,7 @@ A star finder program, written in Rust.
 Enter in location, date, time, and horizontal coordinates of an observed star, and enter it into this program to find information about that star.
 
 For linux, run /target/release/star-map
+
 For Windows, run /target/x86_64-pc-windows-gnu/release/star-map.exe
 
 [Software Demo Video](https://youtu.be/IfQDAYKjHxA)
