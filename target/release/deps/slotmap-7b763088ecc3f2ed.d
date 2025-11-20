@@ -1,0 +1,12 @@
+/home/aidan/Documents/Projects/star-log/target/release/deps/slotmap-7b763088ecc3f2ed.d: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/lib.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/basic.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/dense.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/hop.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/secondary.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/util.rs
+
+/home/aidan/Documents/Projects/star-log/target/release/deps/libslotmap-7b763088ecc3f2ed.rlib: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/lib.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/basic.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/dense.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/hop.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/secondary.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/util.rs
+
+/home/aidan/Documents/Projects/star-log/target/release/deps/libslotmap-7b763088ecc3f2ed.rmeta: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/lib.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/basic.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/dense.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/hop.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/secondary.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/util.rs
+
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/lib.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/basic.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/dense.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/hop.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/secondary.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slotmap-1.0.7/src/util.rs:

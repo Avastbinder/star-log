@@ -1,0 +1,14 @@
+/home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/deps/serde-302310e1748da229.d: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/build/serde-bd29269195822f08/out/private.rs
+
+/home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/deps/libserde-302310e1748da229.rlib: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/build/serde-bd29269195822f08/out/private.rs
+
+/home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/deps/libserde-302310e1748da229.rmeta: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/build/serde-bd29269195822f08/out/private.rs
+
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/build/serde-bd29269195822f08/out/private.rs:
+
+# env-dep:OUT_DIR=/home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/build/serde-bd29269195822f08/out

@@ -1,0 +1,7 @@
+/home/aidan/Documents/Projects/star-log/target/release/deps/futures_io-fa5becf27860b528.d: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-io-0.3.31/src/lib.rs
+
+/home/aidan/Documents/Projects/star-log/target/release/deps/libfutures_io-fa5becf27860b528.rlib: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-io-0.3.31/src/lib.rs
+
+/home/aidan/Documents/Projects/star-log/target/release/deps/libfutures_io-fa5becf27860b528.rmeta: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-io-0.3.31/src/lib.rs
+
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-io-0.3.31/src/lib.rs:

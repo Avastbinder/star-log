@@ -1,0 +1,1 @@
+/home/aidan/Documents/Projects/star-log/target/x86_64-pc-windows-gnu/release/star-map.exe: /home/aidan/Documents/Projects/star-log/src/calculations.rs /home/aidan/Documents/Projects/star-log/src/main.rs

@@ -1,7 +1,7 @@
 {
-   "dstOffset" : 3600,
+   "dstOffset" : 0,
    "rawOffset" : -25200,
    "status" : "OK",
    "timeZoneId" : "America/Boise",
-   "timeZoneName" : "Mountain Daylight Time"
+   "timeZoneName" : "Mountain Standard Time"
 }

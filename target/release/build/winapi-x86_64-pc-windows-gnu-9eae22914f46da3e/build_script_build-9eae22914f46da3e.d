@@ -1,0 +1,5 @@
+/home/aidan/Documents/Projects/star-log/target/release/build/winapi-x86_64-pc-windows-gnu-9eae22914f46da3e/build_script_build-9eae22914f46da3e.d: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winapi-x86_64-pc-windows-gnu-0.4.0/build.rs
+
+/home/aidan/Documents/Projects/star-log/target/release/build/winapi-x86_64-pc-windows-gnu-9eae22914f46da3e/build_script_build-9eae22914f46da3e: /home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winapi-x86_64-pc-windows-gnu-0.4.0/build.rs
+
+/home/aidan/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winapi-x86_64-pc-windows-gnu-0.4.0/build.rs:
